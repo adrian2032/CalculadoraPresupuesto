@@ -20,12 +20,17 @@ function App() {
 
   useEffect(()=>{
     if(Object.keys(gastoEditar).length > 0)
-      handleNuevoGasto()
-      console.log('gasto editar tiene algo')
+      setModal(true)
+
+
+      setTimeout(() => {
+        setAnimarModal(true)
+      }, 1000)
   }, [gastoEditar])
 
   const handleNuevoGasto = () =>{
     setModal(true)
+    setGastoEditar({})
 
     setTimeout(() => {
       setAnimarModal(true)
@@ -33,9 +38,17 @@ function App() {
   }
 
   const guardarGasto = gasto => {
-    gasto.id = generarID();
-    gasto.fecha = Date.now();
-    setGastos([...gastos, gasto])
+    if(gasto.id){
+      const gastosActualizado = gastos.map( gastoState => gastoState.id === gasto.id ? gasto : gastoState)
+      setGastos(gastosActualizado)
+      
+
+    }else{ 
+      gasto.id = generarID();
+      gasto.fecha = Date.now();
+      setGastos([...gastos, gasto])
+
+    }   
 
     setAnimarModal(false)
 
@@ -78,6 +91,7 @@ function App() {
       animarModal={animarModal}
       setAnimarModal={setAnimarModal}
       guardarGasto={guardarGasto}
+      gastoEditar={gastoEditar}
       ></Modal>}
     
   </div>
