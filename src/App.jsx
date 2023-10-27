@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header'
 import ListadoGastos from './components/ListadoGastos'
+import Filtros from './components/Filtros'
 import Modal from './components/Modal'
 import { generarID } from './helpers'
 import IconoNuevoGasto from './img/nuevo-gasto.svg'
@@ -23,6 +24,9 @@ function App() {
 
   const [gastoEditar,  setGastoEditar] = useState({})
 
+  const [filtro, setFiltro] = useState('')
+  const [gastosFiltrados, setGastosFiltrados] = useState([])
+  
   useEffect(()=>{
     if(Object.keys(gastoEditar).length > 0)
       setModal(true)
@@ -41,6 +45,14 @@ function App() {
   useEffect( () => {
     localStorage.setItem('gastos', JSON.stringify((gastos) ?? []))
   }, [gastos] )
+
+  useEffect( () => {
+    if(filtro){
+      const gastosFiltrados = gastos.filter(gasto => gasto.categoria === filtro)
+      setGastosFiltrados(gastosFiltrados)
+      console.log(gastosFiltrados)
+    }
+  }, [filtro])
 
   useEffect( () => {
     const presupyestoLS = Number(localStorage.getItem('presupuesto')) ?? 0;
@@ -90,22 +102,29 @@ function App() {
 
 
   return (
-  <div className={modal ? 'fijar' : ''}>
-    <Header
-      gastos={gastos}
-      presupuesto={presupuesto}
-      setPresupuesto={setPresupuesto}
-      isValidPresupuesto={isValidPresupuesto}
-      setIsValidPresupuesto={setIsValidPresupuesto}
-    ></Header>
+    <div className={modal ? 'fijar' : ''}>
+      <Header
+        gastos={gastos}
+        presupuesto={presupuesto}
+        setPresupuesto={setPresupuesto}
+        isValidPresupuesto={isValidPresupuesto}
+        setIsValidPresupuesto={setIsValidPresupuesto}
+      ></Header>
 
     {isValidPresupuesto && (
       <>
         <main>
+          <Filtros
+            filtro={filtro}
+            setFiltro={setFiltro}
+          ></Filtros>
+          
           <ListadoGastos
             gastos={gastos}
             setGastoEditar={setGastoEditar}
             eliminarGasto={eliminarGasto}
+            filtro={filtro}
+            gastosFiltrados={gastosFiltrados}
           ></ListadoGastos>
         </main>
         <div className='nuevo-gasto'>
